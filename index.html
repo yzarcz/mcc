@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Commands</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 40px;
+        }
+        
+        .left-sidebar {
+            position: sticky;
+            top: 40px;
+            height: fit-content;
+        }
+        
+        .main-content {
+            min-width: 0;
+        }
+        
+        .header {
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #fff 0%, #888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 16px 20px;
+            margin-bottom: 30px;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 12px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 15px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #333;
+        }
+        
+        input::placeholder {
+            color: #555;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-nav {
+            background: #111;
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            padding: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 4px;
+        }
+        
+        .nav-item:hover {
+            background: #1a1a1a;
+            transform: translateX(4px);
+        }
+        
+        .nav-item.active {
+            background: #1a1a1a;
+        }
+        
+        .nav-icon {
+            font-size: 18px;
+        }
+        
+        .nav-title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .command {
+            background: #111;
+            padding: 0;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 14px;
+            border: 1px solid #1a1a1a;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .command::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .command.weapon::before { background: #ef4444; }
+        .command.armor::before { background: #8b5cf6; }
+        .command.tool::before { background: #f59e0b; }
+        .command.effect::before { background: #10b981; }
+        .command.mob::before { background: #ec4899; }
+        .command.util::before { background: #06b6d4; }
+        
+        .command:hover {
+            background: #151515;
+            border-color: #252525;
+            transform: translateX(4px);
+        }
+        
+        .command-content {
+            padding: 18px 20px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        
+        .command-left {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .command-title {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+        
+        .command-code {
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .command-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        
+        .command-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-weapon { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .badge-armor { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+        .badge-tool { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .badge-effect { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .badge-mob { background: rgba(236, 72, 153, 0.15); color: #ec4899; }
+        .badge-util { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: #111;
+            border: 1px solid #222;
+            color: #fff;
+            padding: 16px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 12px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-sidebar">
+            <div class="section-nav" id="sectionNav"></div>
+        </div>
+        
+        <div class="main-content">
+            <div class="header">
+                <h1>Minecraft Commands</h1>
+                <div class="subtitle">Click to copy any command</div>
+            </div>
+            
+            <input type="text" id="search" placeholder="Search commands...">
+            
+            <div id="commands"></div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">✓ Copied to clipboard</div>
+    
+    <script>
+        const sections = {
+            weapon: {
+                title: "⚔️ Weapons",
+                icon: "⚔️",
+                commands: [
+                    { title: "Netherite Spear Maxed", code: '/give @p netherite_spear[enchantments={"sharpness":5,"sweeping_edge":3,"unbreaking":3,"mending":1}] 1' },
+                    { title: "Diamond Spear Maxed", code: '/give @p diamond_spear[enchantments={"sharpness":5,"sweeping_edge":3,"unbreaking":3,"mending":1}] 1' },
+                    { title: "Iron Spear Maxed", code: '/give @p iron_spear[enchantments={"sharpness":5,"sweeping_edge":3,"unbreaking":3,"mending":1}] 1' },
+                    { title: "Golden Spear Maxed", code: '/give @p golden_spear[enchantments={"sharpness":5,"sweeping_edge":3,"unbreaking":3,"mending":1}] 1' },
+                    { title: "Netherite Sword Maxed", code: '/give @p netherite_sword[enchantments={"sharpness":5,"sweeping_edge":3,"unbreaking":3,"mending":1,"looting":3}] 1' },
+                    { title: "Netherite Axe Maxed", code: '/give @p netherite_axe[enchantments={"sharpness":5,"efficiency":5,"unbreaking":3,"mending":1}] 1' },
+                    { title: "Maxed Bow", code: '/give @p bow[enchantments={"power":5,"punch":2,"flame":1,"infinity":1,"unbreaking":3}] 1' },
+                    { title: "Maxed Crossbow", code: '/give @p crossbow[enchantments={"quick_charge":3,"multishot":1,"unbreaking":3,"mending":1}] 1' },
+                    { title: "Maxed Trident", code: '/give @p trident[enchantments={"loyalty":3,"riptide":3,"channeling":1,"unbreaking":3,"mending":1}] 1' }
+                ]
+            },
+            armor: {
+                title: "🛡️ Armor",
+                icon: "🛡️",
+                commands: [
+                    { title: "Netherite Helmet Maxed", code: '/give @p netherite_helmet[enchantments={"protection":4,"unbreaking":3,"mending":1,"respiration":3,"aqua_affinity":1}] 1' },
+                    { title: "Netherite Chestplate Maxed", code: '/give @p netherite_chestplate[enchantments={"protection":4,"unbreaking":3,"mending":1}] 1' },
+                    { title: "Netherite Leggings Maxed", code: '/give @p netherite_leggings[enchantments={"protection":4,"unbreaking":3,"mending":1}] 1' },
+                    { title: "Netherite Boots Maxed", code: '/give @p netherite_boots[enchantments={"protection":4,"unbreaking":3,"mending":1,"feather_falling":4,"depth_strider":3}] 1' },
+                    { title: "Maxed Elytra", code: '/give @p elytra[enchantments={"unbreaking":3,"mending":1}] 1' },
+                    { title: "Maxed Shield", code: '/give @p shield[enchantments={"unbreaking":3,"mending":1}] 1' }
+                ]
+            },
+            tool: {
+                title: "⛏️ Tools",
+                icon: "⛏️",
+                commands: [
+                    { title: "Netherite Pickaxe Maxed", code: '/give @p netherite_pickaxe[enchantments={"efficiency":5,"fortune":3,"unbreaking":3,"mending":1}] 1' },
+                    { title: "Netherite Shovel Maxed", code: '/give @p netherite_shovel[enchantments={"efficiency":5,"unbreaking":3,"mending":1}] 1' },
+                    { title: "Netherite Hoe Maxed", code: '/give @p netherite_hoe[enchantments={"efficiency":5,"unbreaking":3,"mending":1}] 1' },
+                    { title: "Maxed Fishing Rod", code: '/give @p fishing_rod[enchantments={"luck_of_the_sea":3,"lure":3,"unbreaking":3,"mending":1}] 1' }
+                ]
+            },
+            effect: {
+                title: "✨ Effects",
+                icon: "✨",
+                commands: [
+                    { title: "Clear All Effects", code: '/effect clear @p' },
+                    { title: "Max Health (+20 Hearts)", code: '/effect give @p health_boost 999999 20 true' },
+                    { title: "Extreme Speed", code: '/effect give @p speed 999999 10 true' },
+                    { title: "Extreme Strength", code: '/effect give @p strength 999999 10 true' },
+                    { title: "Super Jump", code: '/effect give @p jump_boost 999999 10 true' },
+                    { title: "Full Health", code: '/effect give @p instant_health 1 255' },
+                    { title: "Full Hunger", code: '/effect give @p saturation 1 255' }
+                ]
+            },
+            mob: {
+                title: "👾 Mobs",
+                icon: "👾",
+                commands: [
+                    { title: "Summon Wither", code: '/summon wither ~ ~1 ~' },
+                    { title: "Summon Ender Dragon", code: '/summon ender_dragon ~ ~1 ~' },
+                    { title: "Summon Warden", code: '/summon warden ~ ~1 ~' },
+                    { title: "Super Charged Creeper", code: '/summon creeper ~ ~1 ~ {powered:1,ExplosionRadius:10,Fuse:0}' },
+                    { title: "Giant Zombie", code: '/summon giant ~ ~1 ~' }
+                ]
+            },
+            util: {
+                title: "🔧 Utilities",
+                icon: "🔧",
+                commands: [
+                    { title: "64 Enchanted Golden Apples", code: '/give @p enchanted_golden_apple 64' },
+                    { title: "Totem of Undying", code: '/give @p totem_of_undying 1' },
+                    { title: "Beacon", code: '/give @p beacon 1' },
+                    { title: "64 Netherite Blocks", code: '/give @p netherite_block 64' },
+                    { title: "64 Diamond Blocks", code: '/give @p diamond_block 64' },
+                    { title: "Max XP (21863 Levels)", code: '/xp add @p 21863 levels' },
+                    { title: "Creative Mode", code: '/gamemode creative @p' },
+                    { title: "Survival Mode", code: '/gamemode survival @p' },
+                    { title: "Spectator Mode", code: '/gamemode spectator @p' },
+                    { title: "Set Day", code: '/time set day' },
+                    { title: "Set Night", code: '/time set night' },
+                    { title: "Clear Weather", code: '/weather clear' },
+                    { title: "Thunder Storm", code: '/weather thunder' }
+                ]
+            }
+        };
+        
+        const container = document.getElementById('commands');
+        const searchInput = document.getElementById('search');
+        const toast = document.getElementById('toast');
+        const sectionNav = document.getElementById('sectionNav');
+        
+        function renderNav() {
+            sectionNav.innerHTML = Object.entries(sections).map(([key, section]) => `
+                <div class="nav-item" data-section="${key}">
+                    <div class="nav-icon">${section.icon}</div>
+                    <div class="nav-title">${section.title.replace(/[^\w\s]/gi, '').trim()}</div>
+                </div>
+            `).join('');
+            
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.addEventListener('click', () => {
+                    const sectionId = el.dataset.section;
+                    const sectionEl = document.getElementById(`section-${sectionId}`);
+                    if (sectionEl) {
+                        sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+        }
+        
+        function render(filter = '') {
+            container.innerHTML = '';
+            
+            Object.entries(sections).forEach(([key, section]) => {
+                const filtered = section.commands.filter(c => 
+                    c.title.toLowerCase().includes(filter.toLowerCase()) ||
+                    c.code.toLowerCase().includes(filter.toLowerCase())
+                );
+                
+                if (filtered.length > 0) {
+                    const sectionDiv = document.createElement('div');
+                    sectionDiv.className = 'section';
+                    sectionDiv.id = `section-${key}`;
+                    
+                    sectionDiv.innerHTML = `
+                        <div class="section-title">
+                            <span>${section.icon}</span>
+                            <span>${section.title}</span>
+                        </div>
+                        ${filtered.map(c => `
+                            <div class="command ${key}" data-code="${c.code.replace(/"/g, '&quot;').replace(/\n/g, '&#10;')}">
+                                <div class="command-content">
+                                    <div class="command-left">
+                                        <div class="command-title">${c.title}</div>
+                                        <div class="command-code">${c.code}</div>
+                                    </div>
+                                    <div class="command-right">
+                                        <div class="command-badge badge-${key}">${key}</div>
+                                        <div class="status-badge">Ready</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    `;
+                    
+                    container.appendChild(sectionDiv);
+                }
+            });
+            
+            document.querySelectorAll('.command').forEach(el => {
+                el.addEventListener('click', () => {
+                    const code = el.dataset.code.replace(/&#10;/g, '\n');
+                    navigator.clipboard.writeText(code);
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 2000);
+                });
+            });
+        }
+        
+        searchInput.addEventListener('input', e => render(e.target.value));
+        renderNav();
+        render();
+    </script>
+</body>
+</html>
